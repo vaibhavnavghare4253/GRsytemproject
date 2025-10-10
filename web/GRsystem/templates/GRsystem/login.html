@@ -1,0 +1,330 @@
+{% extends "GRsystem/index.html" %}
+
+{% block title %}Login - GR System{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<style>
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.05)" points="0,1000 1000,0 1000,1000"/></svg>');
+        background-size: cover;
+    }
+
+    .login-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        color: white;
+    }
+
+    .login-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .login-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .login-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .login-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+    }
+
+    .login-card-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .login-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+
+    .login-card p {
+        color: var(--text-light);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .btn-login {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-student {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+    }
+
+    .btn-student:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-admin {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        border: none;
+    }
+
+    .btn-admin:hover {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+    }
+
+    .back-button {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-button:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .features-list {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .features-list h4 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: white;
+        opacity: 0.9;
+    }
+
+    .feature-item i {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .login-title {
+            font-size: 2rem;
+        }
+        
+        .login-subtitle {
+            font-size: 1rem;
+        }
+        
+        .login-cards {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .login-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .back-button {
+            position: relative;
+            top: auto;
+            left: auto;
+            margin-bottom: 2rem;
+            align-self: flex-start;
+        }
+        
+        .login-container {
+            padding: 1rem 0;
+        }
+    }
+</style>
+
+<div class="login-container">
+    <a href="/" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+    </a>
+    
+    <div class="login-content">
+        <div class="login-header">
+            <h1 class="login-title">Welcome to GR System</h1>
+            <p class="login-subtitle">Choose your login method below to access the grievance redressal system</p>
+        </div>
+
+        <div class="login-cards">
+            <!-- Student/Staff Login Card -->
+            <div class="login-card fade-in">
+                <div class="login-card-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h3>Student & Staff Login</h3>
+                <p>Access your personal dashboard to submit grievances, track complaints, and manage your account.</p>
+                <a href="/signin/" class="btn-login btn-student">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Student/Staff Login
+                </a>
+            </div>
+
+            <!-- Admin Login Card -->
+            <div class="login-card fade-in">
+                <div class="login-card-icon">
+                    <i class="fas fa-user-shield"></i>
+           </div>
+                <h3>Administrator Login</h3>
+                <p>Access the admin panel to manage complaints, view analytics, and oversee system operations.</p>
+                <a href="/admin_login/" class="btn-login btn-admin">
+                    <i class="fas fa-cog"></i>
+                    Admin Login
+                </a>
+           </div>
+          </div>
+
+        <div class="features-list fade-in">
+            <h4><i class="fas fa-star me-2"></i>System Features</h4>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Easy Complaint Submission</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-eye"></i>
+                    <span>Real-time Tracking</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Private</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Mobile Responsive</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics Dashboard</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-users"></i>
+                    <span>Multi-user Support</span>
+          </div>
+          </div>
+        </div>
+       </div>
+</div>
+
+<script>
+    // Add fade-in animation to cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.fade-in');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
+</script>
+
+  {% endblock content %}

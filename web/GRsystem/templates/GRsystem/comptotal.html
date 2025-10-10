@@ -1,0 +1,398 @@
+{% extends "GRsystem/index.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --success-color: #4CAF50;
+        --warning-color: #FF9800;
+        --danger-color: #f44336;
+        --info-color: #2196F3;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .complaint-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin: 20px;
+        padding: 30px;
+        min-height: calc(100vh - 40px);
+    }
+
+    .complaint-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .complaint-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .complaint-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 10px;
+        color: var(--primary-color);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-label i {
+        margin-right: 8px;
+        color: var(--primary-color);
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: var(--transition);
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #adb5bd;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-submit {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        padding: 15px 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        margin: 0 auto;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        color: white;
+    }
+
+    .btn-submit i {
+        margin-right: 10px;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: rgba(76, 175, 80, 0.1);
+        color: var(--success-color);
+        border-left: 4px solid var(--success-color);
+    }
+
+    .alert-danger {
+        background: rgba(244, 67, 54, 0.1);
+        color: var(--danger-color);
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .alert-warning {
+        background: rgba(255, 152, 0, 0.1);
+        color: var(--warning-color);
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .alert-info {
+        background: rgba(33, 150, 243, 0.1);
+        color: var(--info-color);
+        border-left: 4px solid var(--info-color);
+    }
+
+    .form-help {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    .required {
+        color: var(--danger-color);
+    }
+
+    .back-btn {
+        background: #6c757d;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .back-btn i {
+        margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .complaint-container {
+            margin: 10px;
+            padding: 20px;
+        }
+        
+        .complaint-title {
+            font-size: 2rem;
+        }
+        
+        .form-section {
+            padding: 20px;
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="complaint-container fade-in">
+    <!-- Header -->
+    <div class="complaint-header">
+        <h1 class="complaint-title">
+            <i class="fas fa-plus-circle me-3"></i>Submit Complaint
+        </h1>
+        <p class="complaint-subtitle">Report your grievance and we'll help resolve it</p>
+    </div>
+
+    <!-- Back Button -->
+    <a href="/dashboard/" class="back-btn">
+        <i class="fas fa-arrow-left"></i>Back to Dashboard
+    </a>
+
+    <!-- Complaint Form -->
+    <div class="form-section">
+        <h3 class="section-title">
+            <i class="fas fa-clipboard-list"></i>Complaint Details
+        </h3>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="complaintForm">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="id_Subject">
+                            <i class="fas fa-heading"></i>Subject <span class="required">*</span>
+                        </label>
+                        <input type="text" name="Subject" class="form-control" id="id_Subject" 
+                               placeholder="Brief description of your complaint" required>
+                        <div class="form-help">Enter a clear, concise subject for your complaint</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="id_Type_of_complaint">
+                            <i class="fas fa-tags"></i>Complaint Type <span class="required">*</span>
+                        </label>
+                        <select name="Type_of_complaint" class="form-control" id="id_Type_of_complaint" required>
+                            <option value="">Select complaint type</option>
+                            <option value="ClassRoom">ClassRoom</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Management">Management</option>
+                            <option value="College">College</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="form-help">Choose the category that best describes your complaint</div>
+                    </div>
+		                </div>
+		            </div>
+		            
+            <div class="form-group">
+                <label class="form-label" for="id_Description">
+                    <i class="fas fa-align-left"></i>Description <span class="required">*</span>
+                </label>
+                <textarea name="Description" class="form-control" id="id_Description" 
+                          placeholder="Please provide detailed information about your complaint..." required></textarea>
+                <div class="form-help">Be as specific as possible. Include dates, times, and any relevant details.</div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-paper-plane"></i>Submit Complaint
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Help Section -->
+    <div class="form-section">
+        <h3 class="section-title">
+            <i class="fas fa-question-circle"></i>Need Help?
+        </h3>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="fas fa-clock text-primary" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <h5>Quick Response</h5>
+                    <p class="text-muted">We typically respond within 24-48 hours</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="fas fa-shield-alt text-success" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <h5>Confidential</h5>
+                    <p class="text-muted">Your complaint is handled confidentially</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="fas fa-check-circle text-info" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <h5>Track Progress</h5>
+                    <p class="text-muted">Monitor your complaint status in the dashboard</p>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+
+  <script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+
+    // Form validation
+    document.getElementById('complaintForm').addEventListener('submit', function(e) {
+        const subject = document.getElementById('id_Subject').value.trim();
+        const type = document.getElementById('id_Type_of_complaint').value;
+        const description = document.getElementById('id_Description').value.trim();
+
+        if (!subject || !type || !description) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+
+        if (description.length < 20) {
+      e.preventDefault();
+            alert('Please provide a more detailed description (at least 20 characters).');
+            return false;
+        }
+    });
+
+    // Character counter for description
+    const descriptionField = document.getElementById('id_Description');
+    const helpText = descriptionField.nextElementSibling;
+    
+    descriptionField.addEventListener('input', function() {
+        const length = this.value.length;
+        helpText.textContent = `Be as specific as possible. Include dates, times, and any relevant details. (${length} characters)`;
+    });
+  </script>
+		
+{% endblock content %}
+
+
+
+		
+	    
+                
+				
+				
+           
+		            
+		
+

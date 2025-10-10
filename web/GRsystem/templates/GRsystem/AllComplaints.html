@@ -1,0 +1,766 @@
+{% extends "GRsystem/index.html" %}
+
+{% block title %}Complaints Management - Admin Panel{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+<style>
+    :root {
+        --admin-primary: #f59e0b;
+        --admin-secondary: #d97706;
+        --admin-dark: #92400e;
+        --admin-light: #fef3c7;
+        --sidebar-width: 280px;
+        --header-height: 70px;
+    }
+
+    .admin-layout {
+        display: flex;
+        min-height: 100vh;
+        background: #f8fafc;
+    }
+
+    .admin-sidebar {
+        width: var(--sidebar-width);
+        background: linear-gradient(180deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+        color: white;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .admin-sidebar.collapsed {
+        width: 70px;
+    }
+
+    .admin-sidebar-header {
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+    }
+
+    .admin-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .admin-logo i {
+        font-size: 2rem;
+    }
+
+    .admin-nav {
+        padding: 1rem 0;
+    }
+
+    .nav-section {
+        margin-bottom: 2rem;
+    }
+
+    .nav-section-title {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: rgba(255,255,255,0.9);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-radius: 0 25px 25px 0;
+        margin-right: 1rem;
+    }
+
+    .nav-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-link.active {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        font-weight: 600;
+    }
+
+    .nav-link i {
+        width: 20px;
+        margin-right: 0.75rem;
+        text-align: center;
+    }
+
+    .admin-main {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        transition: all 0.3s ease;
+    }
+
+    .admin-main.expanded {
+        margin-left: 70px;
+    }
+
+    .admin-header {
+        height: var(--header-height);
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .sidebar-toggle {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--admin-primary);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+        background: var(--admin-light);
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        background: var(--admin-light);
+        border-radius: 25px;
+        color: var(--admin-dark);
+        font-weight: 500;
+    }
+
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        background: var(--admin-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .admin-content {
+        padding: 2rem;
+        min-height: calc(100vh - var(--header-height));
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+    }
+
+    .page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .page-header h1 i {
+        color: var(--admin-primary);
+    }
+
+    .filters-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+    }
+
+    .filter-input {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-input:focus {
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        outline: none;
+    }
+
+    .btn-filter {
+        background: var(--admin-primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-filter:hover {
+        background: var(--admin-secondary);
+        transform: translateY(-1px);
+    }
+
+    .complaints-table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        overflow-x: auto;
+    }
+
+    .complaints-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .complaints-table th {
+        background: #f8fafc;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        border-bottom: 2px solid #e5e7eb;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .complaints-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+
+    .complaints-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-solved {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-inprogress {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .complaint-id {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: var(--admin-primary);
+    }
+
+    .complaint-subject {
+        font-weight: 600;
+        color: var(--text-dark);
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .complaint-type {
+        padding: 0.25rem 0.75rem;
+        background: #f3f4f6;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .complaint-date {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .btn-view {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .btn-update {
+        background: var(--admin-primary);
+        color: white;
+    }
+
+    .btn-update:hover {
+        background: var(--admin-secondary);
+        transform: translateY(-1px);
+    }
+
+    .status-select {
+        padding: 0.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        background: white;
+    }
+
+    .status-select:focus {
+        border-color: var(--admin-primary);
+        outline: none;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+
+    .alert-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border-left: 4px solid #ef4444;
+    }
+
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .alert-info {
+        background: #dbeafe;
+        color: #1e40af;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: inherit;
+        opacity: 0.7;
+        cursor: pointer;
+        float: right;
+        line-height: 1;
+    }
+
+    .close:hover {
+        opacity: 1;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-light);
+    }
+
+    .no-data i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--admin-primary);
+    }
+
+    @media (max-width: 768px) {
+        .admin-sidebar {
+            transform: translateX(-100%);
+        }
+
+        .admin-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+
+        .admin-main {
+            margin-left: 0;
+        }
+
+        .admin-header {
+            padding: 0 1rem;
+        }
+
+        .admin-content {
+            padding: 1rem;
+        }
+
+        .filters-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .complaints-table-container {
+            overflow-x: auto;
+        }
+
+        .complaint-subject {
+            max-width: 150px;
+        }
+    }
+</style>
+
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <a href="/admin_dashboard/" class="admin-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span class="logo-text">Admin Panel</span>
+            </a>
+        </div>
+
+        <nav class="admin-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <div class="nav-item">
+                    <a href="/admin_dashboard/" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span class="nav-text">Overview</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/counter/" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="nav-text">Statistics</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Complaints</div>
+                <div class="nav-item">
+                    <a href="/allcomplaints/" class="nav-link active">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span class="nav-text">All Complaints</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/solved/" class="nav-link">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="nav-text">Solved</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/list/" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        <span class="nav-text">Pending</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <div class="nav-item">
+                    <a href="/passwords/" class="nav-link">
+                        <i class="fas fa-key"></i>
+                        <span class="nav-text">Change Password</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/logout/" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="nav-text">Logout</span>
+                    </a>
+                </div>
+      </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main" id="adminMain">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Complaints Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="admin-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-clipboard-list"></i>
+                    All Complaints
+                </h1>
+            </div>
+
+            <!-- Messages -->
+	{% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="close" onclick="this.parentElement.style.display='none'">&times;</button>
+      {{ message }}
+    </div>
+	{% endfor %}
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <form method="GET" class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Search</label>
+                        <input type="text" name="search" class="filter-input" placeholder="Search complaints..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Complaint Type</label>
+                        <select name="drop" class="filter-input">
+                            <option value="">All Types</option>
+                            <option value="ClassRoom" {% if request.GET.drop == "ClassRoom" %}selected{% endif %}>ClassRoom</option>
+                            <option value="Teacher" {% if request.GET.drop == "Teacher" %}selected{% endif %}>Teacher</option>
+                            <option value="Management" {% if request.GET.drop == "Management" %}selected{% endif %}>Management</option>
+                            <option value="School" {% if request.GET.drop == "School" %}selected{% endif %}>School</option>
+                            <option value="Other" {% if request.GET.drop == "Other" %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </form>
+            </div>
+
+            <!-- Complaints Table -->
+            <div class="complaints-table-container">
+                {% if c %}
+                    <table class="complaints-table">
+  <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID</th>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                                <th>Update Status</th>
+    </tr>
+  </thead>
+                        <tbody>
+{% for data in c %}
+                                <tr>
+                                    <td class="complaint-id">#{{ data.id }}</td>
+                                    <td class="complaint-id">cpm0{{ data.user.id }}</td>
+                                    <td class="complaint-subject">{{ data.Subject }}</td>
+                                    <td>
+                                        <span class="complaint-type">{{ data.get_Type_of_complaint_display }}</span>
+                                    </td>
+                                    <td class="complaint-date">{{ data.Time|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if data.status == '1' %}
+                                            <span class="status-badge status-solved">Solved</span>
+                                        {% elif data.status == '2' %}
+                                            <span class="status-badge status-inprogress">In Progress</span>
+                                        {% else %}
+                                            <span class="status-badge status-pending">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <form method="POST" action='/pdf_g/' style="display: inline;">
+      {% csrf_token %}
+      <input type='hidden' name="cid" value={{data.id}}>
+      <input type="hidden" name="uid" value={{ data.user_id}}>
+                                                <button type='submit' class="btn-action btn-view">
+                                                    <i class="fas fa-eye"></i>View
+                                                </button>
+      </form>
+                                        </div>
+      </td>
+                                    <td>
+                                        <form method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+      {% csrf_token %}
+                                            <select name="status" class="status-select">
+                                                <option value="3" {% if data.status == '3' %}selected{% endif %}>Pending</option>
+                                                <option value="2" {% if data.status == '2' %}selected{% endif %}>In Progress</option>
+                                                <option value="1" {% if data.status == '1' %}selected{% endif %}>Solved</option>
+                                            </select>
+      <input type='hidden' name="cid2" value={{data.id}}>
+      <input type="hidden" name="uid" value={{ data.user_id}}>
+                                            <button type='submit' class="btn-action btn-update">
+                                                <i class="fas fa-save"></i>Update
+                                            </button>
+      </form>
+      </td>
+    </tr>
+                            {% endfor %}
+  </tbody>
+</table>
+                {% else %}
+                    <div class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No complaints found</h3>
+                        <p>There are no complaints matching your search criteria.</p>
+</div>
+                {% endif %}
+      </div>
+        </main>
+    </div>
+   </div>
+
+<script>
+    // Sidebar toggle functionality
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        const sidebar = document.getElementById('adminSidebar');
+        const main = document.getElementById('adminMain');
+        
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('expanded');
+    });
+
+    // Mobile sidebar toggle
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('adminSidebar');
+            sidebar.classList.toggle('mobile-open');
+        });
+    }
+
+    // Auto-hide sidebar on mobile when clicking outside
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            const sidebar = document.getElementById('adminSidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+    });
+
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 500);
+            }, 5000);
+        });
+    });
+  </script>
+		
+{% endblock content %}
