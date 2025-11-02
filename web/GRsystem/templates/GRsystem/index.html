@@ -32,6 +32,12 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
@@ -43,6 +49,10 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         .navbar-brand {
@@ -92,8 +102,12 @@
         .footer {
             background: linear-gradient(135deg, var(--text-dark) 0%, #374151 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 1rem 0;
             margin-top: auto;
+            width: 100% !important;
+            max-width: none !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
         }
 
         .form-control {
@@ -132,8 +146,8 @@
     </style>
 </head>
 
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-lg">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-lg w-100">
+        <div class="container-fluid px-4">
             <a class="navbar-brand" href="/">
                 <i class="fas fa-gavel me-2"></i>GR System
             </a>
@@ -169,8 +183,8 @@
                         </li>
                     {% elif user.is_authenticated and user.profile.type_user == 'grievance' %}	
                         <li class="nav-item">
-                            <a class="nav-link" href="/allcomplaints/">
-                                <i class="fas fa-clipboard-list me-1"></i>Dashboard
+                            <a class="nav-link" href="/admin_dashboard/">
+                                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item"> 
@@ -200,21 +214,21 @@
         {% endblock content %}
     </main>
 
-    <footer class="footer mt-5">
-        <div class="container">
+    <footer class="footer mt-5 w-100">
+        <div class="container-fluid px-4">
             <div class="row">
                 <div class="col-md-6">
                     <h5 class="mb-3">
                         <i class="fas fa-gavel me-2"></i>GR System
                     </h5>
-                    <p class="text-muted">Empowering efficient grievance redressal for a better tomorrow.</p>
+                    <p class="text-white">Empowering efficient grievance redressal for a better tomorrow.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p class="mb-0">
                         <i class="fas fa-code me-1"></i>
-                        Powered by Infosys Springboard
+                        Powered by vaibhav navghare
                     </p>
-                    <small class="text-muted">© 2024 GR System. All rights reserved.</small>
+                    <small class="text-white">© 2024 GR System. All rights reserved.</small>
                 </div>
             </div>
         </div>
